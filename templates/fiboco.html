@@ -1,0 +1,78 @@
+{% extends "layouts/main.html" %}
+
+{% block content %}
+    <h1>Ausgaben für das Angelboot "Jodijo"</h1>
+
+    <form method="post">
+        <table class="u-full-width">
+            <tr>
+                <td></td>
+                <td>
+                    <input type="hidden" name="cid" id="cid"  {% if cid != None: %}value="{{ cid }}"{% endif %}/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="desc">Beschreibung: </label>
+                </td>
+                <td>
+                    <input type="text" name="desc" id="desc"  {% if desc != None: %}value="{{ desc }}"{% endif %}/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="amount">Betrag: </label>
+                </td>
+                <td>
+                    <input type="text" name="amount" id="amount"  {% if amount != None: %}value="{{ amount }}"{% endif %}/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="payer">Zahler: </label>
+                </td>
+                <td>
+                    <input type="text" name="payer" id="payer"  {% if payer != None: %}value="{{ payer }}"{% endif %}/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="date">Datum: </label>
+                </td>
+                <td>
+                    <input type="text" name="date" id="date"  {% if date != None: %}value="{{ date }}"{% endif %}/>
+                </td>
+            </tr>
+
+        </table>
+        <input type="submit" value="Formular abschicken!"/>
+    </form>
+
+    <h2>Augaben</h2>
+    <div class="row">
+        <div class="eight columns">
+            <table class="u-full-width">
+                <thead>
+                <tr>
+                    <th>Cid</th>
+                    <th>Beschreibung</th>
+                    <th>Betrag</th>
+                    <th>Zahler</th>
+                    <th>Datum</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% if cost_map != None: %}
+                        {% for cid in cost_map %}
+                            <tr>
+                                <td>{{ cid }}</td>
+                                <td>{{ value_map.get(cid).desc }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
