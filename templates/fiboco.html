@@ -66,7 +66,7 @@
                         {% for cid in cost_map %}
                             <tr>
                                 <td>{{ cid }}</td>
-                                <td>{{ cost_map.get(cid)[0] }}</td>
+                                <td><a href="{{ '/update/' + str(cid) }}">{{ cost_map.get(cid)[0] }}</a></td>
                                 <td>{{ cost_map.get(cid)[1] }}</td>
                                 <td>{{ cost_map.get(cid)[2] }}</td>
                                 <td>{{ cost_map.get(cid)[3] }}</td>

@@ -1,7 +1,10 @@
 # coding=utf-8
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime, date
 app = Flask(__name__)
+
+
+app.jinja_env.globals.update(str=str)
 
 cost_map = {
     1: ["Rolle für Trailer", 20.00, "Dierk", date(2020, 9, 8)],
@@ -9,34 +12,62 @@ cost_map = {
 }
 
 
-@app.route("/", methods=['GET', 'POST'])
-def hello():
-    cid: int = request.values.get("cid")
-    desc = request.values.get("desc")
-    amount = request.values.get("amount")
-    payer = request.values.get("payer")
-    cdate = request.values.get("cdate")
 
-    if cdate is None:
+@app.route("/", methods=['GET'])
+def handleGet():
+    cid: int = request.args.get("cid")
+    desc: str = None
+    amount: str = None
+    payer: str = None
+    cdate: date = None
+
+    if not empty(cid):
+        desc = cost_map[int(cid)][0]
+        amount = cost_map[int(cid)][1]
+        payer = cost_map[int(cid)][2]
+        cdate = cost_map[int(cid)][3]
+
+    if empty(cdate):
         cdate = date.today()
 
-    if empty(cid) and not empty(desc) and not empty(amount) and not empty(payer):
-        add(desc, amount, payer, cdate)
-
-    if not empty(cid) and not empty(desc) and not empty(amount) and not empty(payer):
-        update(cid, desc, amount, payer, cdate)
-
-    print("Received: cid=<" + str(cid)
+    print("Get: cid=<" + str(cid)
           + "> desc=<" + str(desc)
           + "> amount=<" + str(amount)
           + "> payer=<" + str(payer)
           + "> cdate=<" + str(cdate))
 
-    return render_template("fiboco.html",
-                           cid=cid, desc=desc, amount=amount, payer=payer, cdate=cdate, cost_map=cost_map)
+    return render_template("fiboco.html", cid=cid, desc=desc, amount=amount,
+                           payer=payer, cdate=cdate, cost_map=cost_map)
+
+
+@app.route("/", methods=['POST'])
+def handlePost():
+    cid: int = request.form["cid"]
+    desc = request.form["desc"]
+    amount = request.form["amount"]
+    payer = request.form["payer"]
+    cdate = request.form["cdate"]
+
+    if cdate is None:
+        cdate = date.today()
+
+    if empty(cid):
+        add(desc, amount, payer, cdate)
+    else:
+        update(cid, desc, amount, payer, cdate)
+
+    printMap()
+
+    return redirect(url_for("handleGet", cid=None))
+
+@app.route('/update/<cid>')
+def handleUpdate(cid):
+    return redirect(url_for("handleGet", cid=cid))
+
 
 def empty(x):
     return x is None or not x
+
 
 def add(desc, amount, payer, cdate):
     cid = max(cost_map.keys()) + 1
@@ -55,4 +86,9 @@ def update(cid, desc, amount, payer, cdate):
           + "> payer=<" + str(payer)
           + "> cdate=<" + str(cdate))
 
-    cost_map[cid] = [desc, amount, payer, cdate]
+    cost_map[int(cid)] = [desc, amount, payer, cdate]
+
+
+def printMap():
+    for cid in cost_map:
+        print(cid, type(cid))
