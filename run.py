@@ -20,7 +20,7 @@ def handleGet():
     amount: str = None
     payer: str = None
     cdate: date = None
-    action: str = "Insert"
+    action: str = "Add"
 
     if not empty(cid):
         desc = cost_map[int(cid)][0]
@@ -44,7 +44,7 @@ def handleGet():
 
 @app.route("/", methods=['POST'])
 def handlePost():
-    if request.form['submit'] != 'Clear':
+    if request.form['submit'] == 'Add' or request.form['submit'] == 'Update':
         cid: int = request.form["cid"]
         desc = request.form["desc"]
         amount = request.form["amount"]
@@ -55,11 +55,15 @@ def handlePost():
             cdate = date.today()
 
         if empty(cid):
-            add(desc, amount, payer, cdate)
+            if not empty(desc):
+                add(desc, amount, payer, cdate)
         else:
             update(cid, desc, amount, payer, cdate)
 
         printMap()
+
+    elif request.form['submit'] == 'Delete':
+            delete(request.form["cid"])
 
     return redirect(url_for("handleGet", cid=None))
 
@@ -91,6 +95,9 @@ def update(cid, desc, amount, payer, cdate):
 
     cost_map[int(cid)] = [desc, amount, payer, cdate]
 
+def delete(cid):
+    if not empty(cid):
+        cost_map.pop(int(cid))
 
 def printMap():
     for cid in cost_map:
