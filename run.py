@@ -20,12 +20,14 @@ def handleGet():
     amount: str = None
     payer: str = None
     cdate: date = None
+    action: str = "Insert"
 
     if not empty(cid):
         desc = cost_map[int(cid)][0]
         amount = cost_map[int(cid)][1]
         payer = cost_map[int(cid)][2]
         cdate = cost_map[int(cid)][3]
+        action = "Update"
 
     if empty(cdate):
         cdate = date.today()
@@ -37,26 +39,27 @@ def handleGet():
           + "> cdate=<" + str(cdate))
 
     return render_template("fiboco.html", cid=cid, desc=desc, amount=amount,
-                           payer=payer, cdate=cdate, cost_map=cost_map)
+                           payer=payer, cdate=cdate, action=action, cost_map=cost_map)
 
 
 @app.route("/", methods=['POST'])
 def handlePost():
-    cid: int = request.form["cid"]
-    desc = request.form["desc"]
-    amount = request.form["amount"]
-    payer = request.form["payer"]
-    cdate = request.form["cdate"]
+    if request.form['submit'] != 'Clear':
+        cid: int = request.form["cid"]
+        desc = request.form["desc"]
+        amount = request.form["amount"]
+        payer = request.form["payer"]
+        cdate = request.form["cdate"]
 
-    if cdate is None:
-        cdate = date.today()
+        if cdate is None:
+            cdate = date.today()
 
-    if empty(cid):
-        add(desc, amount, payer, cdate)
-    else:
-        update(cid, desc, amount, payer, cdate)
+        if empty(cid):
+            add(desc, amount, payer, cdate)
+        else:
+            update(cid, desc, amount, payer, cdate)
 
-    printMap()
+        printMap()
 
     return redirect(url_for("handleGet", cid=None))
 
