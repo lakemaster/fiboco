@@ -16,7 +16,7 @@
                     <label for="desc">Beschreibung: </label>
                 </td>
                 <td>
-                    <input type="text" name="desc" id="desc"  {% if desc != None: %}value="{{ desc }}"{% endif %}/>
+                    <input type="text" name="desc" id="desc"  {% if expense.description != None: %}value="{{ expense.description }}"{% endif %}/>
                 </td>
             </tr>
             <tr>
@@ -24,7 +24,7 @@
                     <label for="amount">Betrag: </label>
                 </td>
                 <td>
-                    <input type="text" name="amount" id="amount"  {% if amount != None: %}value="{{ amount }}"{% endif %}/>
+                    <input type="text" name="amount" id="amount"  {% if expense.amount != None: %}value="{{ expense.amount }}"{% endif %}/>
                 </td>
             </tr>
             <tr>
@@ -32,7 +32,7 @@
                     <label for="payer">Zahler: </label>
                 </td>
                 <td>
-                    <input type="text" name="payer" id="payer"  {% if payer != None: %}value="{{ payer }}"{% endif %}/>
+                    <input type="text" name="payer" id="payer"  {% if expense.payer != None: %}value="{{ expense.payer }}"{% endif %}/>
                 </td>
             </tr>
             <tr>
@@ -40,7 +40,7 @@
                     <label for="cdate">Datum: </label>
                 </td>
                 <td>
-                    <input type="text" name="cdate" id="cdate"  {% if cdate != None: %}value="{{ cdate }}"{% endif %}/>
+                    <input type="text" name="cdate" id="cdate"  {% if expense.date != None: %}value="{{ expense.date }}"{% endif %}/>
                 </td>
             </tr>
 
@@ -68,10 +68,10 @@
                         {% for cid in cost_map %}
                             <tr>
                                 <td>{{ cid }}</td>
-                                <td><a href="{{ '/update/' + str(cid) }}">{{ cost_map.get(cid)[0] }}</a></td>
-                                <td>{{ cost_map.get(cid)[1] }}</td>
-                                <td>{{ cost_map.get(cid)[2] }}</td>
-                                <td>{{ cost_map.get(cid)[3] }}</td>
+                                <td><a href="{{ '/update/' + str(cid) }}">{{ cost_map.get(cid).description }}</a></td>
+                                <td>{{ cost_map.get(cid).amount }}</td>
+                                <td>{{ cost_map.get(cid).payer }}</td>
+                                <td>{{ cost_map.get(cid).date }}</td>
                             </tr>
                         {% endfor %}
                     {% endif %}
