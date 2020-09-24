@@ -43,7 +43,6 @@
                     <input type="text" name="cdate" id="cdate"  {% if expense.date != None: %}value="{{ expense.date }}"{% endif %}/>
                 </td>
             </tr>
-
         </table>
         <input type="submit" value="{{ action }}" name="submit"/>
         <input type="submit" value="Delete" name="submit"/>
@@ -64,14 +63,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                    {% if cost_map != None: %}
-                        {% for cid in cost_map %}
+                    {% if expense_map != None: %}
+                        {% for cid in expense_map.keys() %}
                             <tr>
                                 <td>{{ cid }}</td>
-                                <td><a href="{{ '/update/' + str(cid) }}">{{ cost_map.get(cid).description }}</a></td>
-                                <td>{{ cost_map.get(cid).amount }}</td>
-                                <td>{{ cost_map.get(cid).payer }}</td>
-                                <td>{{ cost_map.get(cid).date }}</td>
+                                <td><a href="{{ '/update/' + str(cid) }}">{{ expense_map.get(cid).description }}</a></td>
+                                <td>{{ expense_map.get(cid).amount }}</td>
+                                <td>{{ expense_map.get(cid).payer }}</td>
+                                <td>{{ expense_map.get(cid).date }}</td>
                             </tr>
                         {% endfor %}
                     {% endif %}

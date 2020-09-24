@@ -1,16 +1,9 @@
 # coding=utf-8
+import csv
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import date
 from Expense import Expense
 app = Flask(__name__)
-
-
-app.jinja_env.globals.update(str=str)
-
-cost_map = {
-    1: Expense("Rolle für Trailer", 20.00, "Dierk", date(2020, 9, 8)),
-    2: Expense("Aufkleber Jodijo", 6.99, "Jochen", date(2020, 9, 17))
-}
 
 
 @app.route("/", methods=['GET'])
@@ -20,15 +13,16 @@ def handle_get():
     action: str = "Add"
 
     if not empty(cid):
-        expense = cost_map[int(cid)]
+        expense = expense_map[int(cid)]
         action = "Update"
 
     if empty(expense.date):
         expense.date = date.today()
 
     print("Get: cid=" + str(cid) + ": " + str(expense))
+    print_expense_map()
 
-    return render_template("fiboco.html", cid=cid, expense=expense, action=action, cost_map=cost_map)
+    return render_template("fiboco.html", cid=cid, expense=expense, action=action, expense_map=expense_map)
 
 
 @app.route("/", methods=['POST'])
@@ -61,16 +55,52 @@ def empty(x):
 
 
 def add(expense: Expense):
-    cid = max(cost_map.keys()) + 1
+    cid = 0 if len(expense_map) == 0 else max(expense_map.keys()) + 1
     print("Add: cid=" + str(cid) + ": " + str(expense))
-    cost_map[cid] = expense
+    expense_map[cid] = expense
+    write_expenses()
 
 
 def update(cid, expense):
     print("Add: cid=" + str(cid) + ": " + str(expense))
-    cost_map[int(cid)] = expense
+    expense_map[int(cid)] = expense
+    write_expenses()
 
 
 def remove(cid):
     if not empty(cid):
-        cost_map.pop(int(cid))
+        expense_map.pop(int(cid))
+    write_expenses()
+
+
+def read_expenses():
+    try:
+        with open('fiboco.csv', newline='') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
+            line_count = 0
+            for row in csv_reader:
+                expense_map[line_count] = Expense(row[0], row[1], row[2], row[3])
+                line_count += 1
+    except FileNotFoundError:
+        print('No expense file found')
+        return
+
+    print('Expense read from file: ' + str(line_count))
+
+
+def write_expenses():
+    with open('fiboco.csv', "w", newline='') as csv_file:
+        csv_writer = csv.writer(csv_file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for expense in expense_map.values():
+            csv_writer.writerow([expense.description, expense.amount, expense.payer, expense.date])
+    print(str(len(expense_map)) + " expenses written to file")
+
+
+def print_expense_map():
+    for cid, expense in expense_map.items():
+        print("cid=" + str(cid) + ": " + str(expense))
+
+
+app.jinja_env.globals.update(str=str)
+expense_map: dict = {}
+read_expenses()
