@@ -1,5 +1,7 @@
 # coding=utf-8
 import csv
+import os
+
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import date
 from Expense import Expense
@@ -9,7 +11,7 @@ app = Flask(__name__)
 @app.route("/", methods=['GET'])
 def handle_get():
     cid: int = request.args.get("cid")
-    expense: Expense = Expense("", 0, "", date.today())
+    expense: Expense = Expense("", None, "", date.today())
     action: str = "Add"
 
     if not empty(cid):
@@ -73,10 +75,10 @@ def remove(cid):
     write_expenses()
 
 
-def read_expenses():
+def read_expenses(file_path):
     local_expense_map: dict = {}
     try:
-        with open('fiboco.csv', newline='') as csv_file:
+        with open(file_path, newline='') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
             line_count = 0
             for row in csv_reader:
@@ -90,7 +92,7 @@ def read_expenses():
 
 
 def write_expenses():
-    with open('fiboco.csv', "w", newline='') as csv_file:
+    with open(get_file_path(), "w", newline='') as csv_file:
         csv_writer = csv.writer(csv_file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         for expense in expense_map.values():
             csv_writer.writerow([expense.description, expense.amount, expense.payer, expense.date])
@@ -102,5 +104,14 @@ def print_expense_map():
         print("cid=" + str(cid) + ": " + str(expense))
 
 
+def get_file_path():
+    dirpath = os.environ.get('FIBOCO_DATA');
+    if empty(dirpath):
+        raise ValueError('Environment variable FIBOCO_DATA not set')
+    path = os.path.abspath(dirpath + os.sep + 'fiboco.csv');
+    print('Filepath=' + path)
+    return path
+
+
 app.jinja_env.globals.update(str=str)
-expense_map: dict = read_expenses()
+expense_map: dict = read_expenses(get_file_path())
