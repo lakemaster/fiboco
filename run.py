@@ -74,18 +74,19 @@ def remove(cid):
 
 
 def read_expenses():
+    local_expense_map: dict = {}
     try:
         with open('fiboco.csv', newline='') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
             line_count = 0
             for row in csv_reader:
-                expense_map[line_count] = Expense(row[0], row[1], row[2], row[3])
+                local_expense_map[line_count] = Expense(row[0], row[1], row[2], row[3])
                 line_count += 1
+        print('Expense read from file: ' + str(line_count))
     except FileNotFoundError:
         print('No expense file found')
-        return
 
-    print('Expense read from file: ' + str(line_count))
+    return local_expense_map;
 
 
 def write_expenses():
@@ -102,5 +103,4 @@ def print_expense_map():
 
 
 app.jinja_env.globals.update(str=str)
-expense_map: dict = {}
-read_expenses()
+expense_map: dict = read_expenses()
