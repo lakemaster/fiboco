@@ -22,7 +22,7 @@ def handle_get():
         expense.date = date.today()
 
     print("Get: cid=" + str(cid) + ": " + str(expense))
-    print_expense_map()
+    print_expense_map("handle_get")
 
     return render_template("fiboco.html", cid=cid, expense=expense, action=action, expense_map=expense_map)
 
@@ -76,19 +76,17 @@ def remove(cid):
 
 
 def read_expenses(file_path):
-    local_expense_map: dict = {}
+    expenses: list = []
     try:
         with open(file_path, newline='') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
-            line_count = 0
             for row in csv_reader:
-                local_expense_map[line_count] = Expense(row[0], row[1], row[2], row[3])
-                line_count += 1
-        print('Expense read from file: ' + str(line_count))
+                expenses.append(Expense(row[0], row[1], row[2], row[3]))
+        print('Expense read from file: ' + str(len(expenses)))
     except FileNotFoundError:
         print('No expense file found')
 
-    return local_expense_map;
+    return expenses
 
 
 def write_expenses():
@@ -99,19 +97,31 @@ def write_expenses():
     print(str(len(expense_map)) + " expenses written to file")
 
 
-def print_expense_map():
+def print_expense_map(context):
+    print("Expense map after " + context)
     for cid, expense in expense_map.items():
         print("cid=" + str(cid) + ": " + str(expense))
 
 
 def get_file_path():
-    dirpath = os.environ.get('FIBOCO_DATA');
+    dirpath = os.environ.get('FIBOCO_DATA')
     if empty(dirpath):
         raise ValueError('Environment variable FIBOCO_DATA not set')
-    path = os.path.abspath(dirpath + os.sep + 'fiboco.csv');
+    path = os.path.abspath(dirpath + os.sep + 'fiboco.csv')
     print('Filepath=' + path)
     return path
 
 
+def create_expenses_map(source_expences_list):
+    expenses = sorted(source_expences_list, key=lambda e: e.date, reverse=True)
+    local_expense_map: dict = {}
+    i = 0
+    for expence in expenses:
+        local_expense_map[i] = expence
+        i += 1
+    return local_expense_map
+
+
 app.jinja_env.globals.update(str=str)
-expense_map: dict = read_expenses(get_file_path())
+expense_map: dict = create_expenses_map(read_expenses(get_file_path()))
+
