@@ -1,5 +1,6 @@
 # coding=utf-8
 import csv
+import uuid
 import os
 
 from flask import Flask, render_template, request, redirect, url_for
@@ -90,6 +91,7 @@ def read_expenses(file_path):
 
 
 def write_expenses():
+    os.rename(get_file_path(), get_file_path(True))
     with open(get_file_path(), "w", newline='') as csv_file:
         csv_writer = csv.writer(csv_file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         for expense in expense_map.values():
@@ -103,11 +105,12 @@ def print_expense_map(context):
         print("cid=" + str(cid) + ": " + str(expense))
 
 
-def get_file_path():
+def get_file_path(unique_extension: bool = False):
+    ext = '-' + str(uuid.uuid4()) if unique_extension else ''
     dirpath = os.environ.get('FIBOCO_DATA')
     if empty(dirpath):
         raise ValueError('Environment variable FIBOCO_DATA not set')
-    path = os.path.abspath(dirpath + os.sep + 'fiboco.csv')
+    path = os.path.abspath(dirpath + os.sep + 'fiboco' + ext + '.csv')
     print('Filepath=' + path)
     return path
 
