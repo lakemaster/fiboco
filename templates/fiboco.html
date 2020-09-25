@@ -67,7 +67,7 @@
                         {% for cid in expense_map.keys() %}
                             <tr>
                                 <td>{{ cid }}</td>
-                                <td><a href="{{ '/update/' + str(cid) }}">{{ expense_map.get(cid).description }}</a></td>
+                                <td><a href="{{ '/fiboco/update/' + str(cid) }}">{{ expense_map.get(cid).description }}</a></td>
                                 <td>{{ expense_map.get(cid).amount }}</td>
                                 <td>{{ expense_map.get(cid).payer }}</td>
                                 <td>{{ expense_map.get(cid).date }}</td>

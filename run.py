@@ -8,7 +8,7 @@ from Expense import Expense
 app = Flask(__name__)
 
 
-@app.route("/", methods=['GET'])
+@app.route("/fiboco", methods=['GET'])
 def handle_get():
     cid: int = request.args.get("cid")
     expense: Expense = Expense("", None, "", date.today())
@@ -27,7 +27,7 @@ def handle_get():
     return render_template("fiboco.html", cid=cid, expense=expense, action=action, expense_map=expense_map)
 
 
-@app.route("/", methods=['POST'])
+@app.route("/fiboco", methods=['POST'])
 def handle_post():
     if request.form['submit'] == 'Add' or request.form['submit'] == 'Update':
         cid: int = request.form["cid"]
@@ -47,7 +47,7 @@ def handle_post():
     return redirect(url_for("handle_get", cid=None))
 
 
-@app.route('/update/<cid>')
+@app.route('/fiboco/update/<cid>')
 def handle_update(cid):
     return redirect(url_for("handle_get", cid=cid))
 
@@ -125,3 +125,6 @@ def create_expenses_map(source_expences_list):
 app.jinja_env.globals.update(str=str)
 expense_map: dict = create_expenses_map(read_expenses(get_file_path()))
 
+if __name__ == "__main__":
+    from waitress import serve
+    serve(app, host="0.0.0.0", port=5001)
