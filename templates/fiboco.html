@@ -1,9 +1,12 @@
 {% extends "layouts/main.html" %}
 
 {% block content %}
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js">
+    </script>
+
     <h1>Ausgaben für das Angelboot "Jodijo"</h1>
 
-    <form method="post">
+    <form method="post" id="form-id">
         <table class="u-full-width">
             <tr>
                 <td></td>
@@ -48,6 +51,18 @@
         <input type="submit" value="Delete" name="submit"/>
         <input type="submit" value="Clear" name="submit"/>
     </form>
+    <script>
+        $(window).ready(function() {
+        $("#form-id").on("keypress", function (event) {
+            console.log("aaya");
+            var keyPressed = event.keyCode || event.which;
+            if (keyPressed === 13) {
+                event.preventDefault();
+                return false;
+            }
+        });
+        });
+    </script>
 
     <h2>Ausgaben</h2>
     <div class="row">
