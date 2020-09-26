@@ -3,7 +3,9 @@ import csv
 import uuid
 import os
 from flask import Flask, render_template, request, redirect, url_for
+from babel.numbers import format_decimal
 from datetime import date, datetime
+from decimal import Decimal
 from Expense import Expense
 from ExpenseForm import ExpenseForm
 
@@ -38,9 +40,12 @@ def handle_get():
 def handle_post():
     if request.form['submit'] == 'Add' or request.form['submit'] == 'Update':
         form = ExpenseForm(request.form)
+        print("xxxxxxxxxxxx type(form.amount.data)=" + str(type(form.amount.data)))
+        print("xxxxxxxxxxxx type(form.date.data)=" + str(type(form.date.data)))
+
         if form.validate():
             cid: int = form.id.data
-            expense = Expense(form.description.data, float(form.amount.data), form.payer.data, form.date.data)
+            expense = Expense(form.description.data, Decimal(form.amount.data), form.payer.data, form.date.data)
 
             if empty(expense.date):
                 expense.date = date.today()
@@ -93,7 +98,7 @@ def read_expenses(file_path):
         with open(file_path, newline='') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
             for row in csv_reader:
-                expenses.append(Expense(row[0], float(row[1]), row[2], datetime.strptime(row[3], '%d.%m.%Y').date()))
+                expenses.append(Expense(row[0], Decimal(row[1]), row[2], datetime.strptime(row[3], '%d.%m.%Y').date()))
         print('Expense read from file: ' + str(len(expenses)))
     except FileNotFoundError:
         print('No expense file found')
@@ -114,7 +119,7 @@ def write_expenses():
 def print_expense_map(context):
     print("Expense map after " + context)
     for cid, expense in expense_map.items():
-        print("cid=" + str(cid) + ": " + str(expense))
+        print("cid=" + str(cid) + " typeofamount=" + str(type(expense.amount)) + ": " + str(expense))
 
 
 def get_file_path(unique_extension: bool = False):
@@ -128,7 +133,7 @@ def get_file_path(unique_extension: bool = False):
 
 
 def create_expenses_map(source_expences_list):
-    expenses = sorted(source_expences_list, key=lambda e: e.date, reverse=True)
+    expenses = sorted(source_expences_list, key=lambda e: e.date)
     local_expense_map: dict = {}
     i = 0
     for expence in expenses:
@@ -137,7 +142,7 @@ def create_expenses_map(source_expences_list):
     return local_expense_map
 
 
-app.jinja_env.globals.update(str=str)
+app.jinja_env.globals.update(str=str, sorted=sorted, strftime=date.strftime, format_decimal=format_decimal)
 expense_map: dict = create_expenses_map(read_expenses(get_file_path()))
 
 if __name__ == "__main__":

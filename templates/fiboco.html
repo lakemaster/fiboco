@@ -37,7 +37,7 @@
             <table class="u-full-width">
                 <thead>
                 <tr>
-                    <th>Cid</th>
+                    <th>Id</th>
                     <th>Beschreibung</th>
                     <th>Betrag</th>
                     <th>Zahler</th>
@@ -46,13 +46,13 @@
                 </thead>
                 <tbody>
                     {% if expense_map != None: %}
-                        {% for cid in expense_map.keys() %}
+                        {% for id in sorted(expense_map.keys(), reverse=True) %}
                             <tr>
-                                <td>{{ cid }}</td>
-                                <td><a href="{{ '/fiboco/update/' + str(cid) }}">{{ expense_map.get(cid).description }}</a></td>
-                                <td>{{ expense_map.get(cid).amount }}</td>
-                                <td>{{ expense_map.get(cid).payer }}</td>
-                                <td>{{ expense_map.get(cid).date }}</td>
+                                <td>{{ id }}</td>
+                                <td><a href="{{ '/fiboco/update/' + str(id) }}">{{ expense_map.get(id).description }}</a></td>
+                                <td>{{ format_decimal(expense_map.get(id).amount, format='#,##0.##;-#', locale='de') }}</td>
+                                <td>{{ expense_map.get(id).payer }}</td>
+                                <td>{{ strftime(expense_map.get(id).date, '%d.%m.%Y') }}</td>
                             </tr>
                         {% endfor %}
                     {% endif %}

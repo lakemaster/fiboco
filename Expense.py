@@ -1,11 +1,12 @@
 # coding=utf-8
 from datetime import date
+from decimal import Decimal
 
 
 class Expense:
-    def __init__(self, description: str, amount: float, payer: str, edate: date):
+    def __init__(self, description: str, amount: Decimal, payer: str, edate: date):
         self.description: str = description
-        self.amount: float = amount
+        self.amount: Decimal = amount
         self.payer: str = payer
         self.date: date = edate
 
