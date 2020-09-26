@@ -1,5 +1,5 @@
 {% extends "layouts/main.html" %}
-
+{% from "_formhelpers.html" import render_field %}
 {% block content %}
     <script src="https://code.jquery.com/jquery-3.4.1.min.js">
     </script>
@@ -8,44 +8,11 @@
 
     <form method="post" id="form-id">
         <table class="u-full-width">
-            <tr>
-                <td></td>
-                <td>
-                    <input type="hidden" name="cid" id="cid"  {% if cid != None: %}value="{{ cid }}"{% endif %}/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label for="desc">Beschreibung: </label>
-                </td>
-                <td>
-                    <input type="text" name="desc" id="desc"  {% if expense.description != None: %}value="{{ expense.description }}"{% endif %}/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label for="amount">Betrag: </label>
-                </td>
-                <td>
-                    <input type="text" name="amount" id="amount"  {% if expense.amount != None: %}value="{{ expense.amount }}"{% endif %}/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label for="payer">Zahler: </label>
-                </td>
-                <td>
-                    <input type="text" name="payer" id="payer"  {% if expense.payer != None: %}value="{{ expense.payer }}"{% endif %}/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label for="cdate">Datum: </label>
-                </td>
-                <td>
-                    <input type="text" name="cdate" id="cdate"  {% if expense.date != None: %}value="{{ expense.date }}"{% endif %}/>
-                </td>
-            </tr>
+            {{ render_field(form.id) }}
+            {{ render_field(form.description) }}
+            {{ render_field(form.amount) }}
+            {{ render_field(form.payer) }}
+            {{ render_field(form.date) }}
         </table>
         <input type="submit" value="{{ action }}" name="submit"/>
         <input type="submit" value="Delete" name="submit"/>

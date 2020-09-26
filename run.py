@@ -2,21 +2,27 @@
 import csv
 import uuid
 import os
-
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import date
 from Expense import Expense
+from ExpenseForm import ExpenseForm
+
 app = Flask(__name__)
 
 
 @app.route("/fiboco", methods=['GET'])
 def handle_get():
-    cid: int = request.args.get("cid")
+    form = ExpenseForm(request.args)
+    cid: int = form.id.data
     expense: Expense = Expense("", None, "", date.today())
     action: str = "Add"
 
     if not empty(cid):
         expense = expense_map[int(cid)]
+        form.description.data = expense.description
+        form.amount.data = float(expense.amount)
+        form.payer.data = expense.payer
+        form.date.data = date.fromisoformat(expense.date)
         action = "Update"
 
     if empty(expense.date):
@@ -25,23 +31,28 @@ def handle_get():
     print("Get: cid=" + str(cid) + ": " + str(expense))
     print_expense_map("handle_get")
 
-    return render_template("fiboco.html", cid=cid, expense=expense, action=action, expense_map=expense_map)
+    return render_template("fiboco.html", form=form, expense_map=expense_map, action=action)
 
 
 @app.route("/fiboco", methods=['POST'])
 def handle_post():
     if request.form['submit'] == 'Add' or request.form['submit'] == 'Update':
-        cid: int = request.form["cid"]
-        expense = Expense(request.form["desc"], request.form["amount"], request.form["payer"], request.form["cdate"])
+        form = ExpenseForm(request.form)
+        if form.validate():
+            cid: int = form.id.data;
+            expense = Expense(form.description.data, form.amount.data, form.payer.data, form.date.data)
 
-        if empty(expense.date):
-            expense.date = date.today()
+            if empty(expense.date):
+                expense.date = date.today()
 
-        if empty(cid):
-            if not empty(expense.description):
-                add(expense)
+            if empty(cid):
+                if not empty(expense.description):
+                    add(expense)
+            else:
+                update(cid, expense)
         else:
-            update(cid, expense)
+            print('validation failed')
+            return render_template("fiboco.html", expense_map=expense_map, form=form, action=request.form['submit'])
     elif request.form['submit'] == 'Delete':
         remove(request.form["cid"])
 
@@ -50,7 +61,7 @@ def handle_post():
 
 @app.route('/fiboco/update/<cid>')
 def handle_update(cid):
-    return redirect(url_for("handle_get", cid=cid))
+    return redirect(url_for("handle_get", id=cid))
 
 
 def empty(x):
