@@ -3,7 +3,7 @@ import csv
 import uuid
 import os
 from flask import Flask, render_template, request, redirect, url_for
-from datetime import date
+from datetime import date, datetime
 from Expense import Expense
 from ExpenseForm import ExpenseForm
 
@@ -20,9 +20,9 @@ def handle_get():
     if not empty(cid):
         expense = expense_map[int(cid)]
         form.description.data = expense.description
-        form.amount.data = float(expense.amount)
+        form.amount.data = expense.amount
         form.payer.data = expense.payer
-        form.date.data = date.fromisoformat(expense.date)
+        form.date.data = expense.date
         action = "Update"
 
     if empty(expense.date):
@@ -39,8 +39,8 @@ def handle_post():
     if request.form['submit'] == 'Add' or request.form['submit'] == 'Update':
         form = ExpenseForm(request.form)
         if form.validate():
-            cid: int = form.id.data;
-            expense = Expense(form.description.data, form.amount.data, form.payer.data, form.date.data)
+            cid: int = form.id.data
+            expense = Expense(form.description.data, float(form.amount.data), form.payer.data, form.date.data)
 
             if empty(expense.date):
                 expense.date = date.today()
@@ -54,9 +54,9 @@ def handle_post():
             print('validation failed')
             return render_template("fiboco.html", expense_map=expense_map, form=form, action=request.form['submit'])
     elif request.form['submit'] == 'Delete':
-        remove(request.form["cid"])
+        remove(request.form["id"])
 
-    return redirect(url_for("handle_get", cid=None))
+    return redirect(url_for("handle_get", id=None))
 
 
 @app.route('/fiboco/update/<cid>')
@@ -93,7 +93,7 @@ def read_expenses(file_path):
         with open(file_path, newline='') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
             for row in csv_reader:
-                expenses.append(Expense(row[0], row[1], row[2], row[3]))
+                expenses.append(Expense(row[0], float(row[1]), row[2], datetime.strptime(row[3], '%d.%m.%Y').date()))
         print('Expense read from file: ' + str(len(expenses)))
     except FileNotFoundError:
         print('No expense file found')
@@ -106,7 +106,8 @@ def write_expenses():
     with open(get_file_path(), "w", newline='') as csv_file:
         csv_writer = csv.writer(csv_file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         for expense in expense_map.values():
-            csv_writer.writerow([expense.description, expense.amount, expense.payer, expense.date])
+            csv_writer.writerow([expense.description, expense.amount, expense.payer,
+                                 date.strftime(expense.date, '%d.%m.%Y')])
     print(str(len(expense_map)) + " expenses written to file")
 
 
