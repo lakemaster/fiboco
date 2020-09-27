@@ -50,7 +50,7 @@
                             <tr>
                                 <td>{{ id }}</td>
                                 <td><a href="{{ '/fiboco/update/' + str(id) }}">{{ expense_map.get(id).description }}</a></td>
-                                <td>{{ format_decimal(expense_map.get(id).amount, format='#,##0.##;-#', locale='de') }}</td>
+                                <td>{{ format_decimal(expense_map.get(id).amount, format='#,##0.00', locale='de') + ' €'}}</td>
                                 <td>{{ expense_map.get(id).payer }}</td>
                                 <td>{{ strftime(expense_map.get(id).date, '%d.%m.%Y') }}</td>
                             </tr>
