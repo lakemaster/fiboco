@@ -1,6 +1,7 @@
 from datetime import date
 from wtforms import Form, StringField, DateField, DecimalField, HiddenField, validators
 
+
 class ExpenseForm(Form):
     class Meta:
         locales = ['de']

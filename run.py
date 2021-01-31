@@ -14,6 +14,7 @@ app = Flask(__name__)
 
 @app.route("/fiboco", methods=['GET'])
 def handle_get():
+    print("-->" + str(request.args))
     form = ExpenseForm(request.args)
     cid: int = form.id.data
     expense: Expense = Expense("", None, "", date.today())
