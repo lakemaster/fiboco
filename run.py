@@ -28,6 +28,13 @@ def handle_get():
         form.date.data = expense.date
         action = "Update"
 
+    if 'clear' in request.args:
+        print('Clear...')
+        form.description.data = ''
+        form.amount.data = '0'
+        form.payer.data = ''
+        #form.date = date.today()
+
     if empty(expense.date):
         expense.date = date.today()
 
