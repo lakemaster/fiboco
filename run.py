@@ -17,8 +17,8 @@ def handle_get():
     print("-->" + str(request.args))
     form = ExpenseForm(request.args)
     cid: int = form.id.data
-    expense: Expense = Expense("", None, "", date.today())
-    action: str = "Add"
+    expense: Expense = Expense('', None, '', date.today())
+    action: str = 'Add'
 
     if not empty(cid):
         expense = expense_map[int(cid)]
@@ -30,10 +30,8 @@ def handle_get():
 
     if 'clear' in request.args:
         print('Clear...')
-        form.description.data = ''
-        form.amount.data = '0'
-        form.payer.data = ''
-        #form.date = date.today()
+        form = ExpenseForm()
+        action = 'Add'
 
     if empty(expense.date):
         expense.date = date.today()

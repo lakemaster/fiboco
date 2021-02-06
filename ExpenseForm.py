@@ -7,7 +7,7 @@ class ExpenseForm(Form):
         locales = ['de']
 
     id = HiddenField('Id')
-    description = StringField('Beschreibung', [validators.DataRequired(), validators.Length(min=3, max=255)])
+    description = StringField('Beschreibung', [validators.DataRequired(), validators.Length(min=3, max=255)], default='')
     amount = DecimalField('Betrag', [validators.DataRequired()], use_locale=True)
-    payer = StringField('Zahler', [validators.DataRequired(), validators.Length(min=3, max=32)])
+    payer = StringField('Zahler', [validators.DataRequired(), validators.Length(min=3, max=32)], default='')
     date = DateField('Datum', [validators.DataRequired()], format='%d.%m.%Y', default=date.today())
