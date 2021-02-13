@@ -15,7 +15,7 @@
             {{ render_field(form.date) }}
         </table>
         <input type="submit" value="{{ action }}" name="submit"/>
-        <input type="submit" value="Delete" name="submit" onclick="return confirm('Wirklich löschen?')" formnovalidate/>
+        <input type="submit" value="Delete" name="submit" {{delete_disabled}} onclick="return confirm('Wirklich löschen?')" formnovalidate/>
         <input type="submit" value="Clear" name="clear" formaction="/fiboco" formmethod="get" formnovalidate/>
     </form>
     <script>

@@ -19,19 +19,22 @@ def handle_get():
     cid: int = form.id.data
     expense: Expense = Expense('', None, '', date.today())
     action: str = 'Add'
+    delete_disabled = 'disabled'
 
-    if not empty(cid):
+    if 'clear' in request.args:
+        print('Clear...')
+        form = ExpenseForm()
+        action = 'Add'
+        cid = None
+    elif not empty(cid):
         expense = expense_map[int(cid)]
         form.description.data = expense.description
         form.amount.data = expense.amount
         form.payer.data = expense.payer
         form.date.data = expense.date
         action = "Update"
+        delete_disabled = ''
 
-    if 'clear' in request.args:
-        print('Clear...')
-        form = ExpenseForm()
-        action = 'Add'
 
     if empty(expense.date):
         expense.date = date.today()
@@ -39,7 +42,7 @@ def handle_get():
     print("Get: cid=" + str(cid) + ": " + str(expense))
     print_expense_map("handle_get")
 
-    return render_template("fiboco.html", form=form, expense_map=expense_map, action=action)
+    return render_template("fiboco.html", form=form, expense_map=expense_map, action=action, delete_disabled=delete_disabled)
 
 
 @app.route("/fiboco", methods=['POST'])
